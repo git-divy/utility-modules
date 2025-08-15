@@ -1,6 +1,7 @@
 import subprocess
 import threading
 import shlex
+import time
 
 
 class MTCR:
@@ -14,9 +15,10 @@ class MTCR:
                 self.callback(
                     {
                         "pid": pid,
+                        "timestamp": int(time.time()),
                         "type": out_type,
                         "command": command,
-                        "output": line.rstrip("\n"),
+                        "output": line.strip(),
                         "return_code": None,
                     }
                 )
@@ -24,9 +26,10 @@ class MTCR:
             self.callback(
                 {
                     "pid": pid,
+                    "timestamp": int(time.time()),
                     "type": "err",
                     "command": command,
-                    "output": f"[Stream error: {e}]",
+                    "output": e,
                     "return_code": None,
                 }
             )
@@ -51,9 +54,10 @@ class MTCR:
             self.callback(
                 {
                     "pid": None,
+                    "timestamp": int(time.time()),
                     "type": "err",
                     "command": command,
-                    "output": f"[Launch failed: {e}]",
+                    "output": e,
                     "return_code": None,
                 }
             )
@@ -71,6 +75,7 @@ class MTCR:
         self.callback(
             {
                 "pid": process.pid,
+                "timestamp": int(time.time()),
                 "type": "trm",
                 "command": command,
                 "output": None,
@@ -90,4 +95,4 @@ class MTCR:
 
 
 if __name__ == "__main__":
-    MTCR(["ls", "ls", "dir", "yt-dlp", "ipconfig"], lambda x: print(x)).run()
+    MTCR(["ls", "dir", "yt-dlp", "ipconfig"], lambda x: print(x)).run()
